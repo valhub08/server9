@@ -28,10 +28,10 @@ public class JwtTokenProvider {
     private final UserDetailsService userDetailsService; // 사용자 정보를 위한 서비스
 
     // 객체 초기화, secretKey를 Base64로 인코딩
-    @PostConstruct
-    protected void init() {
-        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-    }
+//    @PostConstruct
+//    protected void init() {
+//        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+//    }
 
     // 토큰 생성
     public String createToken(String userPk, List<String> roles) {  // userPK = email
@@ -68,7 +68,15 @@ public class JwtTokenProvider {
     }
 
     // Request의 Header에서 token 값 가져오기
+//    public String resolveToken(HttpServletRequest request) {
+//        return request.getHeader("X-AUTH-TOKEN"); // X-AUTH-TOKEN이라는 헤더에서 토큰 추출
+//    } // 클라이언트 요청시 이 헤더에 JWT 토큰 포함 시킬것!!
+
     public String resolveToken(HttpServletRequest request) {
-        return request.getHeader("X-AUTH-TOKEN"); // X-AUTH-TOKEN이라는 헤더에서 토큰 추출
-    } // 클라이언트 요청시 이 헤더에 JWT 토큰 포함 시킬것!!
+        String bearerToken = request.getHeader("Authorization");
+        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);  // 'Bearer ' 부분을 제거하고 JWT만 추출
+        }
+        return null;
+    }
 }
